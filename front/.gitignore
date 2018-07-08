@@ -1,0 +1,12 @@
+# dirs
+
+/logs/
+
+/data/
+
+/test/
+
+#files
+
+*.tar.gz
+*.zip

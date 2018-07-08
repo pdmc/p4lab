@@ -1,0 +1,181 @@
+/*!
+ * Date: 2017-11-03
+ */
+
+html,
+body,
+input,
+select,
+textarea,
+button,
+p,pre,
+.ui-btn {
+	font-family: Helvetica, Tahoma, Arial, "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", "Heiti SC", STXihei, "WenQuanYi Micro Hei", SimHei, "微软雅黑",  "华文细黑", sans-serif ;/*{global-font-family}*/
+}
+
+
+.imgtext-footer-container {
+	display:inline;
+}
+
+.ui-listview img {
+	margin-top: 6px;
+	margin-left: 10px;
+}
+
+.text-label {
+	margin: 0px 4px;
+	padding: 0px 6px;
+	background: #CCCCCC;
+	border-radius: 2px;
+}
+
+#intro-pro {
+	background: url(../images/approval.gif) no-repeat 5px 5px; 
+	background-size:25px 25px;
+	background-color: white;
+}
+
+#intro-fav {
+	background: url(../images/favorite.png) no-repeat 5px 5px; 
+	background-size:30px 30px;
+	background-color: white;
+}
+
+
+#footer-btn-diy .ui-icon{background:url(../images/play.png) no-repeat -120px 50%; background-size:300px 60px;}
+
+.header,
+.ui-header {
+	border-width: 0px;
+	padding-top: 0px;
+}
+.footer,
+.ui-footer {
+	border-width: 0px;
+	padding-bottom: 0px;
+}
+
+/* comment and garbage area
+
+	width: 50%;
+	width: 20%;
+
+*/
+
+/* ----------------------------------------------   mypage css-1    --------------------------------------------- */
+#mypage-headlist a {
+	background-color: #ffffff;
+	height: 25%;
+}
+#mypage-headlist {
+	background-color: #333333;
+}
+#mypage-headlist img {
+	margin-top: 3px;
+	margin-left: 10px;
+	height: 90%;
+}
+#mypage .ui-listview {
+}
+#mypage .ui-collapsible {
+	margin: 0 0;
+}
+
+/* Custom indentations are needed because the length of custom labels differs from
+	the length of the standard labels */
+.custom-size-flipswitch.ui-flipswitch .ui-btn.ui-flipswitch-on {
+	text-indent: -3.9em;
+}
+.custom-size-flipswitch.ui-flipswitch .ui-flipswitch-off {
+	text-indent: 0.5em;
+}
+/* Custom widths are needed because the length of custom labels differs from
+	the length of the standard labels */
+.custom-size-flipswitch.ui-flipswitch {
+	width: 6.875em;
+}
+.custom-size-flipswitch.ui-flipswitch.ui-flipswitch-active {
+	padding-left: 5em;
+	width: 1.875em;
+}
+@media (min-width: 28em) {
+	/*Repeated from rule .ui-flipswitch above*/
+	.ui-field-contain > label + .custom-size-flipswitch.ui-flipswitch {
+		width: 1.875em;
+	}
+}
+
+/* -----------------   mypage css-1  over  --------------- */
+
+
+#fbpage textarea#my-fb-textarea {
+	min-height: 200px;
+}
+
+/* -----------------   p4bot-detail css  over  --------------- */
+
+.ui-input-text {
+	width: 75%;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	float: left;
+}
+
+#subBtn {
+	width: 15%;
+	margin-top: 6px;
+	margin-bottom: 6px;
+	margin-right: 3px;
+	float: right;
+}
+.btjumbotron{
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+	overflow-x: auto;
+	overflow-y: auto;
+}
+
+div.speech {
+ margin: 10px 0;
+ padding: 8px;
+ table-layout: fixed;
+ word-break: break-all;
+ position: relative;
+ background: -webkit-gradient( linear, 50% 0%, 50% 100%, from(#ffffff), color-stop(0.1, #ececec), color-stop(0.5, #dbdbdb), color-stop(0.9, #dcdcdc), to(#8c8c8c) );
+ border: 1px solid #989898;
+ -webkit-border-radius: 8px;
+ -moz-border-radius: 8px;
+ border-radius: 8px;
+}
+div.speech.right {
+ box-shadow: -2px 2px 5px #CCC;
+ margin-right: 2px;
+ width: 75%;
+ float: right;
+ background: -webkit-gradient( linear, 50% 0%, 50% 100%, from(#e4ffa7), color-stop(0.1, #bced50), color-stop(0.4, #aed943), color-stop(0.8, #a7d143), to(#99BF40) );
+}
+
+div.speech.left {
+ box-shadow: 2px 2px 2px #CCCCCC;
+ margin-left: 2px;
+ width: 75%;
+ float: left;
+ background: -webkit-gradient( linear, 50% 0%, 50% 100%, from(#ffffff), color-stop(0.1, #eae8e8), color-stop(0.4, #E3E3E3), color-stop(0.8, #DFDFDF), to(#D9D9D9) );
+}
+
+.leftd {
+ clear: both;
+ float: left;
+ padding-left: 8px;
+}
+.rightd {
+ clear: both;
+ float: right;
+ padding-right: 8px;
+}
+.clear {
+ clear: both;
+}
+
