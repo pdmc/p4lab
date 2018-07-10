@@ -1,0 +1,143 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Hello p4ocr</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/boldlight.css">	<!-- for humane.js -->
+	<link rel="stylesheet" href="../css/p4lab.css">
+	<style type="text/css" media="all">
+		.inner_iframe3{
+			position: absolute;
+			width: 100%;
+			 height: 100vh;
+			 margin: 0;
+			 z-index: 100;
+		}
+	</style>
+	<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script type="text/javascript" src="../js/humane.min.js"></script>
+	<script type="text/javascript" src="../js/p4lab.js"></script>
+</head>
+<body>
+	<div data-role="page" id="detailpage" data-add-back-btn="true">
+		<div id="pageBack" data-role="header" data-theme="a" data-position="fixed">
+			<a href="#" data-rel="back" class="ui-btn ui-icon-arrow-l ui-btn-icon-notext ui-corner-all" data-icon="arrow-l"></a>
+			<h1>从图片中识别文字</h1>
+		</div>
+		<div>
+			<div data-role="main" class="ui-content">
+				<form enctype="multipart/form-data" id="form1">
+					<input type="file" id="file" name="imgfile" />
+					<label for="btnsubmit">目前仅支持.png, .jpg, .gif格式，大小不超过2M。</label>
+					<input type="button" id="btnsubmit" name="btnsubmit" data-theme="b" value=" 上传识别 " />
+					<div data-role="popup" id="popupBasic">
+						<p>用户系统暂未开放...</p>
+					</div>
+				</form>
+				<textarea id="inputContentp" rows="10" cols="10" onkeyup="changerow()"></textarea>
+			</div>
+		</div> 
+	</div>
+	<iframe src="demo-intro.html"  name="iframe3" class="inner_iframe3" style="display: none"></iframe>
+<script type="text/javascript">
+$(document).ready(function () {
+	//隐藏加载器.for jQuery Mobile 1.2.0  
+	var secs = 0;
+	function hideLoader() {
+	    $.mobile.loading('hide');
+	}
+	function showLoader() {
+		if(secs == 0)
+			ss = 1;
+		else
+			ss = secs;
+	    $.mobile.loading('show', {
+	        text: '正在上传图片，并进行图片识别计算...' + ss + '秒', //加载器中显示的文字  
+	        textVisible: true, //是否显示文字  
+	        theme: 'a',        //加载器主题样式a-e  
+	        textonly: false,   //是否只显示文字  
+	        html: ""           //要显示的html内容，如图片等  
+	    });
+		setTimeout('showLoader()', 5000);
+	}
+	
+	$("#btnsubmit").click(function () {
+		var formData = new FormData();
+
+		var file = $('#file')[0].files[0];
+
+		if(!file){ 
+			alert("请选择文件"); 
+			$("#btnsubmit").href="#popupBasic"
+			return; 
+		}
+
+		formData.append('file',file);
+
+		const XML = new XMLHttpRequest();
+		var api_url = "http://" + POST_DOMAIN + ":8080/lab/image/ocr";
+
+		XML.open("POST",api_url,true);
+
+		XML.onload = function(res){
+			console.log( "图片的base64码:" + XML.response);
+			var json = eval("("+XML.response+")");
+			var code = json["code"]
+			if (code == 1000){
+				alert(json["text"]);
+				var r, re; // 声明变量。
+				re = /\"/g; 
+				r = json["text"].replace(re, "\\\"");
+				$(inputContentp).html("解析结果是： " + r);
+			}else{
+				$(inputContentp).html("解析失败");
+			}
+		  
+		}
+
+		XML.onerror = function(err){
+			console.log(err);
+		}
+		XML.send(formData);
+	});
+
+
+});
+</script>
+<script> 
+	var widthSize = 25;   //文本框长度
+	var size=0;  //文本框字符长度
+	$("#inputContentp").keyup(function(){  
+		//当前输入的文本比上一次的文本值长度短，就缩减文本框的宽度
+		if(this.value.length<size){
+			size=$("#inputContentp").val().length;  //获取文本框的字符长度
+			widthSize=parseInt(widthSize-10);   //当前文本宽度-10px
+			this.style.width=widthSize+"px";
+			return "";
+		//否则就增加文本框的宽度
+		}else{
+			size=$("#inputContentp").val().length;  //获取文本框的字符长度
+			widthSize=parseInt(widthSize+10); //当前文本宽度+10px
+			this.style.width=widthSize+"px";
+			return "";
+		} 
+	});
+	
+	/*var detailIframe = $(".inner_iframe3");
+    detailIframe.attr("src",'demo-intro.html');
+    detailIframe[0].addEventListener("load",function(){
+        var backEle = window.frames["iframe3"].document.getElementById("pageBack");
+        if (backEle) {
+            backEle.addEventListener('click',function(){
+                detailIframe.css("display","none");
+                $("#detailpage").css("display","block");
+            })
+        }
+	});*/
+
+</script>
+</body>
+</html>

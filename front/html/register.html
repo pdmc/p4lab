@@ -1,0 +1,96 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/boldlight.css">	<!-- for humane.js -->
+	<link rel="stylesheet" href="../css/p4lab.css">
+</head>  
+<body>  
+<div data-role="page" id="registera">  
+	<div data-role="header" data-theme="b" data-position="fixed">
+		<a href="#login" data-rel="back" class="ui-btn ui-icon-arrow-l ui-btn-icon-notext ui-corner-all" data-icon="arrow-l" data-transition="none"></a>
+		<h1>用户注册</h1>  
+	</div>  
+	<div data-role="content">  
+		<form method="post" action="#">  
+			<div data-role="fieldcontain">  
+				<input type="text" name="username" id="re_username" placeholder="用户名">  
+				<input type="password" name="password" id="re_password" placeholder="密码">  
+				<input type="password" id="re_repassword" placeholder="确认密码">
+				<input type="email" name="email" id="re_email" placeholder="邮箱">
+				<input type="number" name="mobile" id="re_mobile" placeholder="手机号码">					 
+			</div>  
+			<div data-role="fieldcontain"> 
+				<input type="submit" data-role="button" id="regBtn" value="注册"> 
+			</div>
+		</form>  
+	</div>  
+</div>  
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../js/humane.min.js"></script>
+<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+	 $(document).ready($(function(){
+		function register () {
+			var username = $('#re_username').val();
+			var password = $('#re_password').val();
+			var repassword = $('#re_repassword').val();
+			var email = $('#re_email').val();
+			var mobile = $('#re_mobile').val();
+			if (username == "" || password =="" || repassword == "" || email == "" || mobile ==""){
+				alert('有空值')
+				return false;
+			}
+			if ($('#re_password').val() != $('#re_repassword').val()){
+				alert('两次密码输入不匹配')
+				$('#re_password').val('');
+				$('#re_repassword').val('');
+				return false;
+			}
+			else{
+				var api_url = "http://" + POST_DOMAIN + ":8080/user/register";
+				$.ajax({
+				//提交数据的类型 POST GET
+				type:"GET",
+				//提交的网址
+				url:api_url,
+				//提交的数据
+				data:{username:username, password:password, email:email, mobile:mobile},
+				dataType: "jsonp",
+				jsonp:'callback',
+				jsonpCallback: "successCallback",//回调方法
+				//成功返回之后调用的函数			 
+				success:function(data){
+					console.log(data);
+					var code = data["code"]
+                    var ailab_uname = data["ailab_uname"]
+                    var storage=window.localStorage;
+                    if (code != 1000){
+                        alert("用户已存在")
+                    }else{
+                    	storage.setItem("p4lab_username", ailab_uname);
+                    	window.location.href = 'my.html';
+                    }
+					//var h = document.querySelector('.btjumbotron').scrollHeight-$('.btjumbotron').height();
+					//$('.btjumbotron').scrollTop(h);
+				},
+				//调用执行后调用的函数
+				complete: function(XMLHttpRequest, textStatus){
+					//HideLoading();
+				},
+				//调用出错执行的函数
+				error: function(msg){
+					//alert(msg.toSource());                //跨域错误会执行到这里
+					//请求出错处理
+				}		 
+			});
+			}
+		}
+		$('#regBtn').on('click',register);
+	}))
+</script>  
+</body>  
+</html>  
