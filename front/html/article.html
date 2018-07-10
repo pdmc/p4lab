@@ -1,0 +1,598 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+	<title>文章列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/boldlight.css">	<!-- for humane.js -->
+	<link rel="stylesheet" href="../css/iscroll.css">
+	<link rel="stylesheet" href="../css/p4lab.css">
+	<style type="text/css">
+		.inner_iframe{
+			position: absolute;
+			width: 100%;
+			height: 100vh;
+			margin: 0;
+			z-index: 100000;
+		}
+	</style>
+</head>  
+<body>  
+<div data-role="page" id="article">  
+	<div data-role="header" data-theme="a" data-position="fixed" id="dheader">
+		<h1>文章列表</h1>  
+		<a href="#myPopup" data-rel="popup" id="bshop" class="ui-btn ui-btn-inline ui-corner-all" >条件过滤</a>
+		<div data-role="panel" id="myPopup" data-position="left" data-display="overlay" data-theme="a" class="ui-panel ui-panel-position-left ui-panel-display-overlay ui-body-a ui-panel-animate ui-panel-closed">
+		<!--div data-role="popup" id="myPopup"-->
+      		<div data-role="main" class="ui-content">
+    			<form method="post">
+      				<fieldset data-role="fieldcontain">
+        			<label for="oneclass">一级标签</label>
+        			<select name="oneclass" id="oneclass" data-native-menu="false">
+	    				<option value="wu">无</option>
+	      				<option value="mianbuhuli">面部护理</option>
+	      				<option value="caizhuang">彩妆</option>
+	      				<option value="meifa">美发</option>
+	      				<option value="yimei">医美</option>
+	      				<option value="fengxiong">丰胸</option>
+	      				<option value="meiti">美体</option>
+	      				<option value="xiangfen">香氛</option>
+			        </select>
+			    	</fieldset>
+			    	<fieldset data-role="fieldcontain">
+        			<label for="datesource">数据来源</label>
+        			<select name="datesource" id="datesource" data-native-menu="false">
+	    				<option value="wu">无</option>
+	      				<option value="7y7">7y7</option>
+	      				<option value="ishowx">ishowx</option>
+	      				<option value="lady8844">lady8844</option>
+	      				<option value="mina">mina</option>
+	      				<option value="onlylady">onlylady</option>
+	      				<option value="piaoliang">piaoliang</option>
+	      				<option value="yoka">yoka</option>
+	      				<option value="youngchina">youngchina</option>
+			        </select>
+			    	</fieldset>
+			    	<fieldset data-role="fieldcontain">
+			    		<input type="text" name="countnum" id="countnum" placeholder="多少页">
+			    	</fieldset>
+    			</form>   			
+    			<a name="submit_filter" id="submit_filter" data-role="button">提交</a><br>
+  			</div>
+    	</div>
+		<a href="#" class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-btn-right" data-icon="refresh" id="arefresh" onclick="location.reload();return true;"></a>
+	</div>  
+	<div id="wrapper">
+	<div id="scroller">
+		<div id="pullDown">
+			<span class="pullDownIcon"></span><span class="pullDownLabel">如果你看到这段文字，请点击右上角按钮刷新。</span>
+		</div>
+		
+		<ul id="thelist" data-role="listview" data-inset="false">
+		</ul>
+		
+		<div id="pullUp">
+			<span class="pullUpIcon"></span><span class="pullUpLabel"></span>
+		</div>
+		
+	</div><!-- /scroll -->
+	</div><!-- /wrapper -->
+
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer" id="dfooter">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="index.html" data-icon="home" data-transition="none" data-ajax="false">首页</a></li>
+				<li><a href="#" data-icon="grid" class="ui-btn-active ui-state-persist">文章</a></li>
+				<li><a href="my.html" data-icon="gear" data-transition="none" data-ajax="false">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div><!-- /page -->
+
+<iframe src="article-intro.html"  name="iframe1" class="inner_iframe" style="display: none">
+	
+</iframe>
+
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../js/iscroll.js"></script>
+<script type="text/javascript" src="../js/humane.min.js"></script>
+<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+window.onload=function(){
+    //alert("ok onload");
+}
+$(document).ready($(function(){
+	//humane.log('1_2_3'.split(',')[0]);
+	//alert("ok ready");
+	
+	var myScroll,
+		pullDownEl, pullDownOffset,
+		pullUpEl, pullUpOffset,
+		generatedCount = 0;
+	var timestamp = (new Date()).valueOf();
+	
+	if(!window.localStorage){
+		humane.log("浏览器暂不支持localStorage");
+	}
+	if(localStorage.itemstart == undefined){
+		localStorage.itemstart = 0;
+		localStorage.itemstep = 10;
+	}
+	//localStorage.itempage = 1;		// to be removed, 删除
+
+	var storage = window.sessionStorage;
+	if(!storage.itempage){
+		storage.itempage = 1;
+	}
+	storage.itempage = 1;
+	
+	dh = $("#dheader").css("height");
+	df = $("#dfooter").css("height");
+	$("#wrapper").css("top",dh);
+	$("#wrapper").css("bottom",df);
+	
+	// 为了刷新页面
+	$('.pullDownLabel').html("下拉刷新...");
+	$('.pullUpLabel').html("上拉加载更多...");
+	$("#arefresh").css("display","none");
+
+    var detailIframe = $(".inner_iframe")
+
+    detailIframe[0].addEventListener("load",function(){
+        var backEle = window.frames["iframe1"].document.getElementById("pageBack")
+        if (backEle) {
+            backEle.addEventListener('click',function(){
+                detailIframe.css("display","none")
+                $("#article").css("display","block");
+            })
+        }
+	})
+
+	/**
+	 * 下拉刷新 （自定义实现此方法）
+	 * myScroll.refresh();		// 数据加载完成后，调用界面更新方法
+	 */
+	function pullDownAction () {
+		setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+			var str = 'a';	//数据加载完成后，调用界面更新方法   Remember to refresh when contents are loaded (ie: on ajax completion)
+			myScroll.refresh();	
+		}, 500);	// <-- Simulate network congestion, remove setTimeout from production!
+	}
+	
+	/**
+	 * 滚动翻页 （自定义实现此方法）
+	 * myScroll.refresh();		// 数据加载完成后，调用界面更新方法
+	 */
+	function pullUpAction () {
+		setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+			var el, li, i;
+			el = document.getElementById('thelist');
+	
+			for (i=0; i<3; i++) {
+				li = document.createElement('li');
+				li.innerText = 'Generated row ' + (++generatedCount);
+				el.appendChild(li, el.childNodes[0]);
+			}
+			
+			myScroll.refresh();		// 数据加载完成后，调用界面更新方法 Remember to refresh when contents are loaded (ie: on ajax completion)
+		}, 1000);	// <-- Simulate network congestion, remove setTimeout from production!
+	}
+
+	function refresh () {
+	}
+	
+
+	/**
+	 * 加载列表内容
+	 */
+	function loadmore () {
+		var itempage = storage.itempage;
+		var api_url = "http://" + POST_DOMAIN + ":8080/article/loadmore";
+		$.ajax({
+			//提交数据的类型 POST GET
+			type:"GET",
+			//提交的网址
+			url:api_url,
+			//提交的数据
+			data:{itemstart:localStorage.itemstart, itemstep: localStorage.itemstep, itempage: itempage, timestamp: timestamp},
+			dataType: "jsonp",
+			jsonp:'callback',
+			jsonpCallback: "successCallback",//回调方法
+			//成功返回之后调用的函数			 
+			success:function(data){
+				console.log(data);
+				
+				//humane.log(data.articles.length);
+				if(! data.articles){
+					humane.log("找不到文章。");
+					return false;
+				}
+				
+				var alen = data.articles.length;
+				var el, li, i;
+				var aimg, atitle, site, ctime,class1;
+				el = document.getElementById('thelist');
+		
+				for (i=0; i<alen; i++) {
+					article = data.articles[i]
+					li = document.createElement('li');
+					tarray = article.title.split("_");
+					//humane.log(tarray.length);
+					if(tarray.length > 1){
+						atitle = tarray[0]
+						//if(!article.sitename || article.sitename == 'null')
+							site = tarray[1]
+					}else{
+						atitle = tarray[0]
+						site = article.sitename
+					}
+					ctime = article.create_date;
+					if(!ctime || ctime.toLowerCase() == 'null')
+						ctime = ''
+					if(!article.class1 || article.class1.toLowerCase() == 'null')
+						class1='';
+					else
+						class1=article.class1;
+					if(! article.img_url){
+						aimg = '';
+					}else{
+						aimg = '<img src="' + article.img_url + '"/>'
+					}
+					//li.setAttribute('class',"ui-li-static ui-body-inherit ui-first-child"); article-intro.html
+					li.innerHTML = '<a href="#" data-transition="none" class="ui-btn ui-btn-icon-right ui-icon-carat-r">' + 
+						aimg +
+						'<h2 style="width: 90%;">' + atitle + '</h2>' +
+						'<p>' + article.content_sample + '</p>' +
+						'<p><span>' + class1 + '</span>&nbsp;&nbsp;&nbsp;<span>' + ctime + '</span></p>' +
+						'<p class="ui-li-aside"><strong>' + site + '</strong></p>' +
+						'<span class="artid" style="display:none">' + article.article_id +  '</span></a>';
+					el.appendChild(li, el.childNodes[0]);
+					
+					li.children[0].addEventListener('click', function (e) { 
+						var detailIframe = $(".inner_iframe")
+						//e.preventDefault();
+						//artid = $("this .artid").innerHTML;
+						artid = this.lastElementChild.innerHTML;
+						//humane.log(artid);
+						storage.article_id = artid;
+						//location.replace("article-intro.html");
+						// 显示详情
+						detailIframe.css("display","block");
+						$("#article").css("display","none");
+
+                        var updateid = window.frames["iframe1"].queryone;
+
+                        debugger;
+                        updateid(artid);
+
+					}, false);/**/
+				}
+
+				myScroll.refresh();	
+				storage.itempage = parseInt(itempage) + 1;
+			},
+			//调用执行后调用的函数
+			complete: function(XMLHttpRequest, textStatus){
+				//HideLoading();
+			},
+			//调用出错执行的函数
+			error: function(msg){
+				if(msg)
+					humane.log(msg.toSource());                //跨域错误会执行到这里
+				//请求出错处理
+			}		 
+		});
+	}
+
+	
+	/**
+	 * 初始化iScroll控件
+	 */
+	function loaded() {
+		pullDownEl = document.getElementById('pullDown');
+		pullDownOffset = pullDownEl.offsetHeight;
+		pullUpEl = document.getElementById('pullUp');	
+		pullUpOffset = pullUpEl.offsetHeight;
+		strRefresh = "下拉刷新...";
+		strLoadmore = "上拉加载更多...";
+		strRelease = "松手开始更新..."
+		strLoading = '加载中...'
+	
+		myScroll = new iScroll('wrapper', {
+			scrollbarClass: 'myScrollbar', /* 重要样式 */
+			useTransition: false, /* 此属性不知用意，本人从true改为false */
+			topOffset: pullDownOffset,
+			disableMouse: true,
+    		disablePointer: true,
+			onRefresh: function () {
+				if (pullDownEl.className.match('loading')) {
+					pullDownEl.className = '';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strRefresh;
+				} else if (pullUpEl.className.match('loading')) {
+					pullUpEl.className = '';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoadmore;
+				}
+			},
+			onScrollMove: function () {
+				if (this.y > 5 && !pullDownEl.className.match('flip')) {
+					pullDownEl.className = 'flip';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strRelease;
+					this.minScrollY = 0;
+				} else if (this.y < 5 && pullDownEl.className.match('flip')) {
+					pullDownEl.className = '';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strRefresh;
+					this.minScrollY = -pullDownOffset;
+				} else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+					pullUpEl.className = 'flip';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strRelease;
+					this.maxScrollY = this.maxScrollY;
+				} else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+					pullUpEl.className = '';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoadmore;
+					this.maxScrollY = pullUpOffset;
+				}
+			},
+			onScrollEnd: function () {
+				var oneclass = $('#oneclass').val(); 
+				var datesource = $('#datesource').val(); 
+				flag = oneclass + datesource
+				if (flag == "wuwu"){
+					if (pullDownEl.className.match('flip')) {
+						pullDownEl.className = 'loading';
+						pullDownEl.querySelector('.pullDownLabel').innerHTML = strLoading;				
+						pullDownAction();	// Execute custom function (ajax call?)
+					} else if (pullUpEl.className.match('flip')) {
+						pullUpEl.className = 'loading';
+						pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoading;				
+						loadmore();	// Execute custom function (ajax call?)
+					}
+				} else {
+					//alert (flag)
+					if (pullDownEl.className.match('flip')) {
+						pullDownEl.className = 'loading';
+						pullDownEl.querySelector('.pullDownLabel').innerHTML = strLoading;				
+						pullDownAction();	// Execute custom function (ajax call?)
+					} else if (pullUpEl.className.match('flip')) {
+						pullUpEl.className = 'loading';
+						pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoading;				
+						filtermore();	// Execute custom function (ajax call?)
+					}
+
+				}
+			}
+		});
+		
+		setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
+	}
+	
+	//初始化绑定iScroll控件 
+	document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+	//document.addEventListener('DOMContentLoaded', loaded, false); 
+	loaded();
+	
+	loadmore();
+
+	function filtermore () {
+		var itempage = storage.itempage;
+		var oneclass = $('#oneclass').val(); 
+		var datesource = $('#datesource').val(); 
+		$.ajax({
+			//提交数据的类型 POST GET
+			type:"GET",
+			//提交的网址
+			url:"http://dmc.pk4yo.com:8080/article/loadmore_f",
+			//提交的数据
+			data:{ oneclass: oneclass, datesource: datesource, itempage: itempage},
+			dataType: "jsonp",
+			jsonp:'callback',
+			jsonpCallback: "successCallback",//回调方法
+			//成功返回之后调用的函数			 
+			success:function(data){
+				console.log(data);
+				
+				//humane.log(data.articles.length);
+				
+				var alen = data.articles.length;
+				var el, li, i;
+				var aimg, atitle, site, ctime,class1;
+				el = document.getElementById('thelist');
+		
+				for (i=0; i<alen; i++) {
+					article = data.articles[i]
+					li = document.createElement('li');
+					tarray = article.title.split("_");
+					//humane.log(tarray.length);
+					if(tarray.length > 1){
+						atitle = tarray[0]
+						//if(!article.sitename || article.sitename == 'null')
+							site = tarray[1]
+					}else{
+						atitle = tarray[0]
+						site = article.sitename
+					}
+					ctime = article.create_date;
+					if(!ctime || ctime.toLowerCase() == 'null')
+						ctime = ''
+					if(!article.class1 || article.class1.toLowerCase() == 'null')
+						class1='';
+					else
+						class1=article.class1;
+					if(! article.img_url){
+						aimg = '';
+					}else{
+						aimg = '<img src="' + article.img_url + '"/>'
+					}
+					//li.setAttribute('class',"ui-li-static ui-body-inherit ui-first-child"); article-intro.html
+					li.innerHTML = '<a href="#" data-transition="none" class="ui-btn ui-btn-icon-right ui-icon-carat-r">' + 
+						aimg +
+						'<h2 style="width: 90%;">' + atitle + '</h2>' +
+						'<p>' + article.content_sample + '</p>' +
+						'<p><span>' + class1 + '</span>&nbsp;&nbsp;&nbsp;<span>' + ctime + '</span></p>' +
+						'<p class="ui-li-aside"><strong>' + site + '</strong></p>' +
+						'<span class="artid" style="display:none">' + article.article_id +  '</span></a>';
+					el.appendChild(li, el.childNodes[0]);
+					
+							li.children[0].addEventListener('click', function (e) { 
+						var detailIframe = $(".inner_iframe")
+						//e.preventDefault();
+						//artid = $("this .artid").innerHTML;
+						artid = this.lastElementChild.innerHTML;
+						//humane.log(artid);
+						storage.article_id = artid;
+						//location.replace("article-intro.html");
+						// 显示详情
+						detailIframe.css("display","block");
+						$("#article").css("display","none");
+
+                        var updateid = window.frames["iframe1"].queryone;
+
+                        debugger;
+                        updateid(artid);
+
+					}, false);/**/
+				}
+
+				myScroll.refresh();	
+				if(alen > 0)
+					storage.itempage = parseInt(itempage) + 1;
+			},
+			//调用执行后调用的函数
+			complete: function(XMLHttpRequest, textStatus){
+				//HideLoading();
+			},
+			//调用出错执行的函数
+			error: function(msg){
+				if(msg)
+					humane.log(msg.toSource());                //跨域错误会执行到这里
+				//请求出错处理
+			}		 
+		});
+	}
+
+
+	$('#submit_filter').on('click',submit_filter);
+
+
+	function submit_filter () {
+		// $('.ui-btn-inline').popup('close');  
+  		document.getElementById("thelist").innerHTML="";
+		sessionStorage.setItem('itempage', 1);
+		var oneclass = $('#oneclass').val(); 
+		var datesource = $('#datesource').val(); 
+		var pagenum = $('#countnum').val();
+		if (pagenum != ""){
+			sessionStorage.setItem('itempage', parseInt(pagenum));
+		}
+		
+		var itempage = storage.itempage;
+		//storage.itempage = parseInt(pagenum);
+		//storage.itempage = parseInt(pagenum);
+		//var aaa = storage.getItem('itempage');
+		//alert(pagenum)
+		$.ajax({
+			//提交数据的类型 POST GET
+			type:"GET",
+			//提交的网址
+			url:"http://192.168.1.215:8080/article/loadmore_f",
+			//提交的数据
+			data:{ oneclass: oneclass, datesource: datesource, itempage: itempage},
+			dataType: "jsonp",
+			jsonp:'callback',
+			jsonpCallback: "successCallback",//回调方法
+			//成功返回之后调用的函数			 
+			success:function(data){
+				console.log(data);
+				
+				//humane.log(data.articles.length);
+				if(!data.articles){
+					humane.log("No article found!");
+					return false;
+				}
+				
+				var alen = data.articles.length;
+				var el, li, i;
+				var aimg, atitle, site, ctime,class1;
+				el = document.getElementById('thelist');
+		
+				for (i=0; i<alen; i++) {
+					article = data.articles[i]
+					li = document.createElement('li');
+					tarray = article.title.split("_");
+					//humane.log(tarray.length);
+					if(tarray.length > 1){
+						atitle = tarray[0]
+						//if(!article.sitename || article.sitename == 'null')
+							site = tarray[1]
+					}else{
+						atitle = tarray[0]
+						site = article.sitename
+					}
+					ctime = article.create_date;
+					if(!ctime || ctime.toLowerCase() == 'null')
+						ctime = ''
+					if(!article.class1 || article.class1.toLowerCase() == 'null')
+						class1='';
+					else
+						class1=article.class1;
+					if(! article.img_url){
+						aimg = '';
+					}else{
+						aimg = '<img src="' + article.img_url + '"/>'
+					}
+					//li.setAttribute('class',"ui-li-static ui-body-inherit ui-first-child"); article-intro.html
+					li.innerHTML = '<a href="#" data-transition="none" class="ui-btn ui-btn-icon-right ui-icon-carat-r">' + 
+						aimg +
+						'<h2 style="width: 90%;">' + atitle + '</h2>' +
+						'<p>' + article.content_sample + '</p>' +
+						'<p><span>' + class1 + '</span>&nbsp;&nbsp;&nbsp;<span>' + ctime + '</span></p>' +
+						'<p class="ui-li-aside"><strong>' + site + '</strong></p>' +
+						'<span class="artid" style="display:none">' + article.article_id +  '</span></a>';
+					el.appendChild(li, el.childNodes[0]);
+					
+					li.children[0].addEventListener('click', function (e) { 
+						var detailIframe = $(".inner_iframe")
+						//e.preventDefault();
+						//artid = $("this .artid").innerHTML;
+						artid = this.lastElementChild.innerHTML;
+						//humane.log(artid);
+						storage.article_id = artid;
+						//location.replace("article-intro.html");
+						// 显示详情
+						detailIframe.css("display","block");
+						$("#article").css("display","none");
+
+                        var updateid = window.frames["iframe1"].queryone;
+
+                        debugger;
+                        updateid(artid);
+
+					}, false);/**/
+				}
+
+				myScroll.refresh();	
+				storage.itempage = parseInt(itempage) + 1;
+				$("#myPopup").popup("close");
+			},
+			//调用执行后调用的函数
+			complete: function(XMLHttpRequest, textStatus){
+				//HideLoading();
+			},
+			//调用出错执行的函数
+			error: function(msg){
+				if(msg)
+					humane.log(msg.toSource());                //跨域错误会执行到这里
+				//请求出错处理
+			}		 
+		});
+	}
+	
+}))
+
+</script>
+
+</body>  
+</html>  

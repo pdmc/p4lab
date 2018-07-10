@@ -1,0 +1,151 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>这是一篇Demo文章</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/p4lab.css">
+	<style type="text/css" media="all">
+		#acontent {
+			overflow:auto;
+		}
+		.inner_iframe2{
+			position: absolute;
+			width: 100%;
+			 height: 100vh;
+			 margin: 0;
+			 z-index: 100;
+		}
+	</style>
+</head>
+
+<body>
+<div data-role="page" id="demointro" data-add-back-btn="true">
+	<div id="pageBack" data-role="header" data-theme="a" data-position="fixed">
+		<a class="ui-btn ui-icon-arrow-l ui-btn-icon-notext ui-corner-all" data-icon="arrow-l" data-transition="none"></a>
+		<h1 id="htitle">这是一篇Demo文章</h1>
+	</div>
+	<div role="main" class="ui-content">
+		<div id="acontent">
+				如果你看到我，说明你的网络慢！
+				Tu me miras y me llevas a otra dimensión 
+				Tu latidos aceleran a mi corazón 
+				Que ironía del destino no poder tocarte 
+				Abrazarte y sentir la magia de tu olor 
+				Tu cuerpo y el mio llenando el vacío 
+				Subiendo y bajando 
+
+		</div>
+		<p>
+			from: PK4YO DMC
+		</p>
+		<p id="atags"></p>
+		<p></p>
+		<p></p>
+		<a href="#" data-role="button" data-ajax="false" id="demoBtn">Demo</a>
+		<p></p>
+		<p></p>
+		<div style="text-align:center">
+			<a href="#" class="ui-btn ui-btn-inline" id="intro-pro">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="intro-pro-txt">22</span></a>
+			<a href="#"  class="ui-btn ui-btn-inline" id="intro-fav">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="intro-fav-txt">收了</span></a>
+		</div>
+	</div><!-- /ui-content -->
+
+</div><!-- /page -->
+<iframe src="#"  name="iframe2" class="inner_iframe2" style="display: none"></iframe>
+
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../js/humane.min.js"></script>
+<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+	//alert(document.referrer);
+
+    function queryone (article_id) {
+		var api_url = "http://" + POST_DOMAIN + ":8080/aidemo/queryone";
+        $.ajax({
+            //提交数据的类型 POST GET
+            type:"GET",
+            //提交的网址
+            url:api_url,
+            //提交的数据
+            data:{item_id:article_id},
+            dataType: "jsonp",
+            jsonp:'callback',
+            jsonpCallback: "successCallback",//回调方法
+            //成功返回之后调用的函数
+            success:function(data){
+                console.log(data);
+
+                //humane.log(data.articles.length);
+				if(! data.demo_articles){
+					humane.log("找不到Demo文章。");
+					return false;
+				}
+
+                var alen = data.demo_articles.length;
+                var acontent, atags, sp='';
+                var tarray,i;
+                acontent = $("#acontent");
+                atags = $("#atags");
+
+                if(!data.demo_articles)
+                	return True;
+                if(alen != 1){
+                    humane.log("文章数不对啊！");
+                }
+
+                demo_article = data.demo_articles[0]
+                document.title = demo_article.title;
+                $("#htitle").html(demo_article.title);
+	    		var content = demo_article.main_content;
+	    		//acontent.html(article.context_html);
+	    		acontent.html("<pre>" + content + "</pre>");
+                if(!demo_article.tags || demo_article.tags.toLowerCase() == "null"){
+                    sp = ''
+                }else {
+                    tarray = demo_article.tags.split("|")
+                    for(i=0;i<tarray.length;i++){
+                        sp = sp + '<span class="text-label">' + tarray[i] + '</span>';
+                    }
+                }
+                //sp = '<span class="text-label">' + article.tags + '</span>';
+                atags.html(sp);
+                
+				var detailIframe = $(".inner_iframe2");
+                detailIframe.attr("src",demo_article.prefix + '-detail.html');
+			    detailIframe[0].addEventListener("load",function(){
+			        var backEle = window.frames["iframe2"].document.getElementById("pageBack")
+			        if (backEle) {
+			            backEle.addEventListener('click',function(){
+			                detailIframe.css("display","none");
+			                $("#demointro").css("display","block");
+			            })
+			        }
+				});
+				
+                //$("#demoBtn").attr('href',demo_article.prefix + '-detail.html');
+				$("#demoBtn")[0].addEventListener('click', function () { 
+					detailIframe.css("display","block");
+					$("#demointro").css("display","none");
+				}, false);
+
+
+
+            },
+            //调用执行后调用的函数
+            complete: function(XMLHttpRequest, textStatus){
+                //HideLoading();
+            },
+            //调用出错执行的函数
+            error: function(msg){
+                if(msg)
+                    humane.log(msg.toSource());                //跨域错误会执行到这里		 onload="alert('onload');return True;"
+                //请求出错处理
+            }
+        });
+    }
+</script>
+</body>
+</html>

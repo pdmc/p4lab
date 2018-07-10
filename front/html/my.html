@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/boldlight.css">	<!-- for humane.js -->
+	<link rel="stylesheet" href="../css/p4lab.css">
+	<style type="text/css">
+		#logoutBtn {
+			text-align: center;
+			background-color: #A00;
+			color: #FFF;
+		}
+	</style>
+</head>
+<body>
+<div data-role="page" id="mypage">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<ul data-role="listview" data-inset="false" id="mypage-headlist">
+			<li>
+				<a id="nologin" href="login.html" data-transition="none" data-ajax="false">
+					<img src="../images/default-portrait.gif"/>
+					<h2 id="username">未登录</h2>
+					<p></p><p></p>
+				</a>
+			</li>
+		</ul>
+		<div data-role="navbar" style="display:none">
+			<ul>
+				<li><a href="#" data-transition="none"><span>0</span><br/>浏览</a></li>
+				<li><a href="#" data-transition="none"><span>0</span><br/>收藏</a></li>
+				<li><a href="#" data-transition="none"><span>0</span><br/>关注</a></li>
+			</ul>
+		</div><!-- /navbar -->
+		<div class="ui-grid-b">
+			<div class="ui-block-a"><div class="ui-bar ui-bar-a" style="text-align: center"><span>0</span><br/>浏览</div></div>
+			<div class="ui-block-b"><div class="ui-bar ui-bar-a" style="text-align: center"><span>0</span><br/>收藏</div></div>
+			<div class="ui-block-c"><div class="ui-bar ui-bar-a" style="text-align: center"><span>0</span><br/>关注</div></div>
+		</div><!-- /grid-b -->
+	</div>
+	<ul data-role="listview">
+		<li><a href="my-feedback.html"  data-transition="none">用户反馈</a></li>
+	</ul>
+			<div data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u" data-iconpos="right">
+				<h4>系统设置</h4>
+				<form>
+						<label for="flip-checkbox-3">选择主题:</label>
+						<input type="checkbox" data-role="flipswitch" name="flip-checkbox-3" id="flip-checkbox-3" data-on-text="主题A" data-off-text="暂无" data-wrapper-class="custom-size-flipswitch" checked="">
+					</form>
+			</div>
+	<ul data-role="listview" id="loginPart">
+		<li><a href="publish-demo.html" data-transition="none">发表文章</a></li>
+		<li><a type="submit" data-role="button" id="logoutBtn"  data-transition="none">用户退出</a></li>
+	</ul>
+
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="index.html" data-icon="home" data-transition="none" data-ajax="false">首页</a></li>
+				<li><a href="article.html" data-icon="grid" data-transition="none" data-ajax="false">文章</a></li>
+				<li><a href="#" data-icon="gear" class="ui-btn-active ui-state-persist">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div>
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../js/humane.min.js"></script>
+<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+$(document).ready($(function(){
+	window.onload = function () {
+	 	//var storage=window.localStorage;
+	 	var storage=window.localStorage;
+	 	var data = storage.getItem('p4lab_username');
+	 	if(data == null){
+	 		$("#username").text("未登录");
+			$("#loginPart").hide();
+	 	}
+	 	else{
+	 		$("#username").text(data);
+	 	}
+		//var p_text = $("#username").text();
+		//if(p_text == "未登录"){
+		//}	 	
+	 	//console.log(data + '1111'); 
+	}
+
+	function logout () {
+		var api_url = "http://" + POST_DOMAIN + ":8080/user/logout";
+		$.ajax({
+			type:"GET",
+			async:false, 
+			//提交的网址
+			url:api_url,
+			//提交的数据
+			data:{},
+			dataType: "jsonp",
+			jsonp:'callback',
+			jsonpCallback: "successCallback",//回调方法
+			//成功返回之后调用的函数			 
+			success:function(data){
+				console.log(data);
+				var code = data["code"];
+				if (!code || code != 1000){
+					humane.log("退出失败")
+					//$("#popupView").popup('账号密码错误');
+				}else{
+					//window.location.href = 'my.html';
+					var storage=window.localStorage;
+					storage.setItem("p4lab_username", "未登录");
+			 		$("#username").text("未登录");
+					$("#loginPart").hide();
+					
+				}
+
+			},
+			//调用执行后调用的函数
+			complete: function(XMLHttpRequest, textStatus){
+				//HideLoading();
+			},
+			//调用出错执行的函数
+			error: function(msg){
+				//alert(msg.toSource());				//跨域错误会执行到这里
+				//请求出错处理
+			}
+
+		});
+	}
+	$('#logoutBtn').on('click',logout);
+
+	$('#nologin').click(function(){  
+		var p_text = $("#username").text();
+		if (p_text == "未登录"){
+			return true;
+		}
+		else{
+			return false;
+		}
+	});
+
+}))
+
+</script>
+</body>
+</html>

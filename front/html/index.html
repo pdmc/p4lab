@@ -1,0 +1,333 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>P4Lab</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/boldlight.css">	<!-- for humane.js -->
+	<link rel="stylesheet" href="../css/iscroll.css">
+	<link rel="stylesheet" href="../css/p4lab.css">
+	<style type="text/css">
+		.inner_iframe1{
+			position: absolute;
+			width: 100%;
+			height: 100vh;
+			margin: 0;
+			z-index: 100;
+		}
+	</style>
+</head>
+<body>
+<div data-role="page" class="p4lab" id="frontpage">
+	<div data-role="header" data-theme="a" data-position="fixed" id="dheader">
+		<h1>P4Lab</h1>
+		<a href="#" class="ui-btn ui-icon-refresh ui-btn-icon-notext ui-corner-all ui-btn-right" data-icon="refresh" id="arefresh" onclick="location.reload();return true;"></a>
+	</div>
+	<div id="wrapper">
+	<div id="scroller">
+		<div id="pullDown">
+			<span class="pullDownIcon"></span><span class="pullDownLabel">如果你看到这段文字，请点击右上角按钮刷新。</span>
+		</div>
+		
+		<ul id="thelist" data-role="listview" data-inset="true">
+		<li>
+				<a href="front-intro.html" data-transition="none">
+				<h2>关于P4Lab</h2>
+				<p>本应用是DMC部门进行实验的Demo页面。其中提供了接口和Demo，用户可以测试和使用其中提供的接口，也可以浏览demo，若将接口应用到产品中，需要提前告知。</p>
+				<p class="ui-li-aside"><strong>15:16</strong>PM</p>
+			</a>
+		</li>
+		<!--li>	
+			<a href="p4bot-intro.html" data-transition="none">
+                                <img src="../images/ai12.png"/>
+				<h2>和机器人撩撩天</h2>
+				<p></p><p></p>
+				<p>
+					<span><span>1</span>人观看</span>
+					<span>刚刚</span>
+				</p>
+			</a>
+		</li>
+		<li>
+			<a href="p4part-intro.html" data-transition="none">
+				<h2>中文分词接口与Demo</h2>
+				<p></p><p></p>
+				<p>
+					<span><span>1</span>人观看</span>
+					<span>刚刚</span>
+				</p>
+			</a>
+		</li>
+		<li>
+			<a href="p4ocr-intro.html" data-transition="none">
+				<img src="../images/ai16.png"/>
+				<h2>一个好用的中英文OCR模型</h2>
+				<p></p><p></p>
+				<p>
+					<span><span>1</span>人观看</span>
+					<span>刚刚</span>
+				</p>
+			</a>
+		</li-->
+		</ul>
+		
+		<div id="pullUp">
+			<span class="pullUpIcon"></span><span class="pullUpLabel"></span>
+		</div>
+		
+	</div><!-- /scroll -->
+	</div><!-- /wrapper -->
+
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer" id="dfooter">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#" data-icon="home" class="ui-btn-active ui-state-persist">首页</a></li>
+				<li><a href="article.html" data-icon="grid" data-transition="none" data-ajax="false">文章</a></li>
+				<li><a href="my.html" data-icon="gear" data-transition="none" data-ajax="false">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div>
+<iframe src="demo-intro.html"  name="iframe1" class="inner_iframe1" style="display: none"></iframe>
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../js/iscroll.js"></script>
+<script type="text/javascript" src="../js/humane.min.js"></script>
+<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+$(document).ready($(function(){
+	$("#arefresh").css("display","none");
+		
+	var myScroll,
+		pullDownEl, pullDownOffset,
+		pullUpEl, pullUpOffset;
+	var timestamp = (new Date()).valueOf();
+	
+	if(!window.localStorage){
+		humane.log("浏览器暂不支持localStorage");
+	}
+	if(localStorage.demostart == undefined){
+		localStorage.demostart = 0;
+		localStorage.demostep = 10;
+	}
+	//localStorage.demopage = 1;		// to be removed, 删除
+
+	var storage = window.sessionStorage;
+	if(!storage.demopage){
+		storage.demopage = 1;
+	}
+	storage.demopage = 1;
+	
+	dh = $("#dheader").css("height");
+	df = $("#dfooter").css("height");
+	$("#wrapper").css("top",dh);
+	$("#wrapper").css("bottom",df);
+	
+	// 为了刷新页面
+	$('.pullDownLabel').html("下拉刷新...");
+	$('.pullUpLabel').html("上拉加载更多...");
+	//$("#arefresh").css("display","none");
+
+    var detailIframe = $(".inner_iframe1")
+    detailIframe[0].addEventListener("load",function(){
+        var backEle = window.frames["iframe1"].document.getElementById("pageBack")
+        if (backEle) {
+            backEle.addEventListener('click',function(){
+                detailIframe.css("display","none")
+                $("#frontpage").css("display","block");
+            })
+        }
+	})
+
+	/**
+	 * 加载列表内容
+	 */
+	function loadmore () {
+		var demopage = storage.demopage;
+		var api_url = "http://" + POST_DOMAIN + ":8080/aidemo/loadmore";
+		$.ajax({
+			//提交数据的类型 POST GET
+			type:"GET",
+			//提交的网址
+			url:api_url,
+			//提交的数据
+			data:{demostart:localStorage.demostart, demostep: localStorage.demostep, demopage: demopage, timestamp: timestamp},
+			dataType: "jsonp",
+			jsonp:'callback',
+			jsonpCallback: "successCallback",//回调方法
+			//成功返回之后调用的函数			 
+			success:function(data){
+				console.log(data);
+				
+				//humane.log(data.articles.length);
+				if(! data.demo_articles){
+					humane.log("找不到Demo。");
+					return false;
+				}
+				
+				var alen = data.demo_articles.length;
+				var el, li, i;
+				var aimg, atitle, site, ctime,class1;
+				el = document.getElementById('thelist');
+				var timestamp = Date.parse(new Date());
+				
+				for (i=0; i<alen; i++) {
+					demo = data.demo_articles[i]
+					li = document.createElement('li');
+					atitle = demo.title;
+					ctime = demo.create_date;
+					if(!ctime || ctime.toLowerCase() == 'null')
+						ctime = ''
+					var newDate = new Date();
+					newDate.setTime(parseInt(ctime)*1000);
+					var y = newDate.getFullYear();
+					var m = newDate.getMonth() + 1;
+					var d = newDate.getDate();
+					if(!y || y > 3000 || y < 2000)
+						ctime = '未知'
+					else
+						ctime = y + '.' + m + '.' + d
+					if(!demo.class1 || demo.class1.toLowerCase() == 'null')
+						class1='';
+					else
+						class1=demo.class1;
+					if(! demo.img_url){
+						aimg = '';
+					}else{
+						aimg = '<img src="' + demo.img_url + '" style="height:80px;width:80px" />'
+						li.setAttribute('class',"ui-li-has-thumb"); //article-intro.html
+					}
+					li.innerHTML = '<a href="#" data-transition="none" class="ui-btn ui-btn-icon-right ui-icon-carat-r">' + 
+						aimg +
+						'<h2 style="width: 90%;">' + atitle + '</h2>' +
+						'<p>' + demo.main_content + '</p>' +
+						'<p><span>' + ctime + '</span></p>' +
+						'<p><span class="demoid" style="display:none">' + demo.demo_id +  '</span></p></a>';
+					/*li.innerHTML = 	'<a href="p4bot-intro.html" data-transition="none" class="ui-btn ui-btn-icon-right ui-icon-carat-r">	' + 
+                                '<img src="../images/ai12.png"/>' + 
+				'<h2>和机器人撩撩天</h2>' + 
+				'<p></p><p></p>' + 
+				'<p>' + 
+					'<span><span>1</span>人观看</span>' + 
+					'<span>刚刚</span>' + 
+				'</p>' + 
+			'</a>';*/
+					el.appendChild(li, el.childNodes[0]);
+					
+					li.children[0].addEventListener('click', function (e) { 
+						var detailIframe = $(".inner_iframe1")
+						//e.preventDefault();
+						//demoid = $("this .demoid").innerHTML;
+						demoid = this.lastElementChild.children[0].innerHTML;
+						//humane.log(demoid);
+						storage.demo_id = demoid;
+						//location.replace("article-intro.html");
+						// 显示详情
+						detailIframe.css("display","block");
+						$("#frontpage").css("display","none");
+
+                        var updateid = window.frames["iframe1"].queryone;
+
+                        debugger;
+                        updateid(demoid);
+
+					}, false);/**/
+				}
+
+				myScroll.refresh();	
+				storage.demopage = parseInt(demopage) + 1;
+			},
+			//调用执行后调用的函数
+			complete: function(XMLHttpRequest, textStatus){
+				//HideLoading();
+			},
+			//调用出错执行的函数
+			error: function(msg){
+				if(msg)
+					humane.log(msg.toSource());                //跨域错误会执行到这里
+				//请求出错处理
+			}		 
+		});
+	}
+
+	function pullDownAction () {
+		setTimeout(function () {	// <-- Simulate network congestion, remove setTimeout from production!
+			var str = 'a';	//数据加载完成后，调用界面更新方法   Remember to refresh when contents are loaded (ie: on ajax completion)
+			myScroll.refresh();	
+		}, 500);	// <-- Simulate network congestion, remove setTimeout from production!
+	}
+	
+	/**
+	 * 初始化iScroll控件
+	 */
+	function loaded() {
+		pullDownEl = document.getElementById('pullDown');
+		pullDownOffset = pullDownEl.offsetHeight;
+		pullUpEl = document.getElementById('pullUp');	
+		pullUpOffset = pullUpEl.offsetHeight;
+		strRefresh = "下拉刷新...";
+		strLoadmore = "上拉加载更多...";
+		strRelease = "松手开始更新..."
+		strLoading = '加载中...'
+	
+		myScroll = new iScroll('wrapper', {
+			scrollbarClass: 'myScrollbar', /* 重要样式 */
+			useTransition: false, /* 此属性不知用意，本人从true改为false */
+			topOffset: pullDownOffset,
+			disableMouse: true,
+    		disablePointer: true,
+			onRefresh: function () {
+				if (pullDownEl.className.match('loading')) {
+					pullDownEl.className = '';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strRefresh;
+				} else if (pullUpEl.className.match('loading')) {
+					pullUpEl.className = '';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoadmore;
+				}
+			},
+			onScrollMove: function () {
+				if (this.y > 5 && !pullDownEl.className.match('flip')) {
+					pullDownEl.className = 'flip';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strRelease;
+					this.minScrollY = 0;
+				} else if (this.y < 5 && pullDownEl.className.match('flip')) {
+					pullDownEl.className = '';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strRefresh;
+					this.minScrollY = -pullDownOffset;
+				} else if (this.y < (this.maxScrollY - 5) && !pullUpEl.className.match('flip')) {
+					pullUpEl.className = 'flip';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strRelease;
+					this.maxScrollY = this.maxScrollY;
+				} else if (this.y > (this.maxScrollY + 5) && pullUpEl.className.match('flip')) {
+					pullUpEl.className = '';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoadmore;
+					this.maxScrollY = pullUpOffset;
+				}
+			},
+			onScrollEnd: function () {
+				if (pullDownEl.className.match('flip')) {
+					pullDownEl.className = 'loading';
+					pullDownEl.querySelector('.pullDownLabel').innerHTML = strLoading;				
+					pullDownAction();	// Execute custom function (ajax call?)
+				} else if (pullUpEl.className.match('flip')) {
+					pullUpEl.className = 'loading';
+					pullUpEl.querySelector('.pullUpLabel').innerHTML = strLoading;				
+					loadmore();	// Execute custom function (ajax call?)
+				}
+			}
+		});
+		
+		setTimeout(function () { document.getElementById('wrapper').style.left = '0'; }, 800);
+	}
+	
+	//初始化绑定iScroll控件 
+	document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+	//document.addEventListener('DOMContentLoaded', loaded, false); 
+	loaded();
+	loadmore();
+		
+}))
+</script>
+</body>
+</html>

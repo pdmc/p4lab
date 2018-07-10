@@ -1,0 +1,104 @@
+<html>  
+<head>  
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/boldlight.css">	<!-- for humane.js -->
+	<link rel="stylesheet" href="../css/p4lab.css">
+</head>  
+<body>  
+<div data-role="page" id="login">  
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<h1>用户登录</h1>  
+	</div>  
+	<div data-role="content">  
+		<form method="post" action="#">  
+			<div data-role="fieldcontain">  
+				<input type="text" name="username" id="username" placeholder="用户名">  
+				<input type="password" name="password" id="password" placeholder="密码">  
+				<select name="switch" id="switch" data-role="slider">  
+					<option value="False">不保存</option>  
+					<option value="True">保存</option>  
+				</select>  
+				<a type="submit" data-role="button" id="loginBtn" value="登录">登录</a>  
+			</div>
+		</form>  
+			<a href="register.html" data-transition="none" data-ajax="false">
+				<h5>点击注册</h5>
+					</p><p></p>
+			</a>
+	</div>  
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="index.html" data-icon="home" data-transition="none">首页</a></li>
+				<li><a href="#" data-icon="grid" class="ui-btn-active ui-state-persist">统计</a></li>
+				<li><a href="my.html" data-icon="gear" data-transition="none">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div>
+
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+<script type="text/javascript" src="../js/humane.min.js"></script>
+<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+	 $(document).ready($(function(){
+		function login () {
+			var username = $('#username').val();
+			var password = $('#password').val();
+			var flag = $('#switch').val();
+			var api_url = "http://" + POST_DOMAIN +":8080/user/login";
+			//alert(flag)	
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"GET",
+				async:false, 
+				//提交的网址
+				url:api_url,
+				//提交的数据
+				data:{username: username, password: password, flag: flag},
+				dataType: "jsonp",
+				jsonp:'callback',
+				jsonpCallback: "successCallback",//回调方法
+				//成功返回之后调用的函数			 
+				success:function(data){
+					console.log(data);
+                    //var h = document.querySelector('.btjumbotron').scrollHeight-$('.btjumbotron').height();
+                    //$('.btjumbotron').scrollTop(h);
+                    var code = data["code"]
+                    var ailab_uname = data["ailab_uname"]
+                    //var storage=window.localStorage;
+                    var storage=window.localStorage;
+                    if (code != 1000){
+                        humane.log("账号密码错误")
+                        //("#popupView").popup('账号密码错误');
+                    }else{
+                    	storage.setItem("p4lab_username", ailab_uname);
+                    	window.location.href = 'my.html';
+
+                    	//var oldHtml = $("#mypage-headlist").html();
+                    	//console.log(oldHtml);
+                    	//console.log("aaaa");  
+                    	//var newHtml = '<ul data-role="listview" data-inset="false" id="mypage-headlist"><li><a href="login.html" data-transition="none"><img src="../images/default-portrait.gif"/><h2>'+message+'</h2><p></p><p></p></a></li></ul>'
+						//$("#mypage-headlist").html(newHtml);
+
+                    }
+				},
+				//调用执行后调用的函数
+				complete: function(XMLHttpRequest, textStatus){
+					//HideLoading();
+				},
+				//调用出错执行的函数
+				error: function(msg){
+					//alert(msg.toSource());                //跨域错误会执行到这里
+					//请求出错处理
+				}		 
+			});
+		}
+		$('#loginBtn').on('click',login);
+	}))
+</script>  
+</body>  
+</html>  
