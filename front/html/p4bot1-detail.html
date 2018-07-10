@@ -1,0 +1,105 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>聊天机器人(1号)</title>  
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+	<link rel="stylesheet" href="../css/p4lab.css">
+</head>  
+<body>  
+<div data-role="page" id="fbpage"> 
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<a href="index.html" data-rel="back" class="ui-btn ui-icon-arrow-l ui-btn-icon-notext ui-corner-all" data-icon="arrow-l"></a>
+		<h1>聊天机器人(1号)</h1>  
+	</div>  
+	<div data-role="none">  
+		<div>  
+			<div class="btjumbotron col-lg-6">
+				<div class="leftd">
+				  <div class="speech left" > 你好！我是聊天机器人1号，嘻嘻。 </div>
+				</div>
+			</div>
+			<div data-role="footer" data-position="fixed" class="footer">
+
+				<div>
+					<input type="text" data-inline="true" id="inputContent" class="fff" placeholder="说点什么吧 ...">
+						<a disabled="false" data-theme="b" data-inline="true" data-role="button"  id="subBtn" data-ajax="false" href="#">发送</a>
+				 </div> 
+			</div>
+		</div>
+
+	</div> 
+</div>
+	<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script type="text/javascript" src="../js/p4lab.js"></script>
+<script type="text/javascript">
+	 $(document).ready($(function(){
+		$('#inputContent')[0].addEventListener('keyup',function(){
+			if($('#inputContent').val() == '' || $('#inputContent').val() == null || $('#inputContent').val() == undefined){
+				$('#subBtn').addClass("ui-disabled"); //attr('disabled',true);
+			}else {
+				$('#subBtn').removeClass("ui-disabled"); //attr('disabled',false);
+			}
+		})
+		function scrollToEnd(){//滚动到底部
+            var h = $(document).height()-$(window).height();
+            $(document).scrollTop(h); 
+		}
+		function postmsg () {
+			var inputContent = $('#inputContent').val();
+			var inputHtml = $(".btjumbotron").html()+'<div class="rightd"><div class="speech right">'+inputContent+'</div></div>';
+			$(".btjumbotron").html(inputHtml);
+			//$(".btjumbotron").scrollBottom();
+			scrollToEnd();
+			$('#inputContent').val(null);
+			if($('#inputContent').val() == '' || $('#inputContent').val() == null || $('#inputContent').val() == undefined){
+				$('#subBtn').addClass("ui-disabled");
+			}else {
+				$('#subBtn').removeClass("ui-disabled");
+			}
+			var api_url = "http://" + POST_DOMAIN + ":8081/mybot";
+			$.ajax({
+				//提交数据的类型 POST GET
+				type:"GET",
+				//提交的网址
+				url:api_url,
+				//提交的数据
+				data:{siri:inputContent, sessionID: 'wangjipeng', timer: '20171013'},
+				dataType: "jsonp",
+				jsonp:'callback',
+				jsonpCallback: "successCallback",//回调方法
+				//成功返回之后调用的函数			 
+				success:function(data){
+					console.log(data);
+					
+					var oldHtml = $(".btjumbotron").html();
+					var newHtml = oldHtml +'<div class="leftd"><div class="speech left">'+data["text"]+'</div></div>'
+					$(".btjumbotron").html(newHtml);
+					//var h = document.querySelector('.btjumbotron').scrollHeight-$('.btjumbotron').height();
+					//$('.btjumbotron').scrollTop(h);
+					scrollToEnd();
+				},
+				//调用执行后调用的函数
+				complete: function(XMLHttpRequest, textStatus){
+					//HideLoading();
+				},
+				//调用出错执行的函数
+				error: function(msg){
+					alert(msg.toString());                //跨域错误会执行到这里
+					//请求出错处理
+				}		 
+			});
+		}
+		$('#subBtn').on('click',postmsg);
+		window.onkeyup = function(eve){
+			var e = eve || window.event;
+			if (e.keyCode == 13) {
+				postmsg();
+			};
+		}
+	}))
+</script>  
+</body>  
+</html>  
