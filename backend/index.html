@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<link href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+<body>
+<div data-role="page" id="pageone">
+  <div data-role="header">
+    <h1>pk4yo主页</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <a href="#pagetwo" class="ui-btn ui-corner-all ui-shadow" data-transition="slide" >聊天</a>
+  </div>
+    <div data-role="main" class="ui-content">
+    <a href="#pagethree" class="ui-btn ui-corner-all ui-shadow" data-transition="slide">分词</a>
+  </div>
+    <div data-role="main" class="ui-content">
+    <a href="#pagefour" class="ui-btn ui-corner-all ui-shadow" data-transition="slide">图片</a>
+  </div>
+
+  <div data-role="footer">
+    <h1>  </h1>
+  </div>
+</div> 
+
+
+<div data-role="page" id="pagetwo">
+  <div data-role="header">
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left">主页</a>
+    <h1>聊天</h1>
+  </div>
+  <style type="text/css">
+    .jumbotron{
+      margin: 0px;
+      padding: 0px;
+      height: 300px;
+      overflow: scroll;
+    }
+    .col-lg-6 {
+      padding: 0px
+    }
+    .data {
+      font-size: 16px;
+      font-weight: normal;
+        max-width: 70%;
+        word-break:break-all;
+    }
+    .left{
+      float: right;
+      display: block;
+    }
+    .right{
+      float: left;
+      display: block;
+    }
+    </style>
+  <body>
+    <div class="panel panel-default container">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-lo-6 col-lg-offset-3">
+          <div class="row">
+            <div class="jumbotron col-lg-6">
+            
+          </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+            <div class="input-group">
+              <input type="text" id="inputContent" class="form-control" placeholder="P4BOT ...">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" id="subBtn" disabled type="button">Go!</button>
+                </span>
+            </div><!-- /input-group -->
+          </div><!-- /.col-lg-6 -->
+          </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(function(){
+        $('#inputContent')[0].addEventListener('keyup',function(){
+          if($('#inputContent').val() == '' || $('#inputContent').val() == null || $('#inputContent').val() == undefined){
+            $('#subBtn').attr('disabled',true);
+          }else {
+            $('#subBtn').attr('disabled',false);
+          }
+        })
+            function postmsg () {
+                var inputContent = $('#inputContent').val();
+                var inputHtml = $(".jumbotron").html()+'<div class="row"><div class="panel panel-default left data"><div class="panel-body">'+inputContent+'</div></div></div>';
+                $(".jumbotron").html(inputHtml);
+                $('#inputContent').val(null);
+                if($('#inputContent').val() == '' || $('#inputContent').val() == null || $('#inputContent').val() == undefined){
+                    $('#subBtn').attr('disabled',true);
+                }else {
+                    $('#subBtn').attr('disabled',false);
+                }
+                $.ajax({
+                    //提交数据的类型 POST GET
+                    type:"POST",
+                    //提交的网址
+                    url:"http://101.236.20.142:8080/index",
+                    //提交的数据
+                    data:{siri:inputContent},
+                    dataType: "text",
+                    //成功返回之后调用的函数             
+                    success:function(data){
+                        var oldHtml = $(".jumbotron").html();
+                        var newHtml = oldHtml +'<div style="overflow:hidden;"><div class="panel panel-default data right"><div class="panel-body">'+data+'</div></div></div>'
+                        $(".jumbotron").html(newHtml);
+                        var h = document.querySelector('.jumbotron').scrollHeight-$('.jumbotron').height();
+                        $('.jumbotron').scrollTop(h);
+                    },
+                    //调用执行后调用的函数
+                    complete: function(XMLHttpRequest, textStatus){
+                        //HideLoading();
+                    },
+                    //调用出错执行的函数
+                    error: function(){
+                        //请求出错处理
+                    }         
+                });
+            }
+        $('#subBtn').on('click',postmsg);
+            window.onkeyup = function(eve){
+                var e = eve || window.event;
+                if (e.keyCode == 13) {
+                    postmsg();
+                };
+            }
+        })
+    </script>
+  </body>
+  <div data-role="footer">
+    <h1>  </h1>
+  </div>
+</div> 
+
+<div data-role="page" id="pagethree">
+  <div data-role="header">
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left">主页</a>
+    <h1>分词</h1>
+  </div>
+  <style type="text/css">
+    .jumbotronf{
+      margin: 0px;
+      padding: 0px;
+      height: 300px;
+      overflow: scroll;
+    }
+    .col-lg-6 {
+      padding: 0px
+    }
+    .data {
+      font-size: 16px;
+      font-weight: normal;
+        max-width: 70%;
+        word-break:break-all;
+    }
+    .left{
+      float: right;
+      display: block;
+    }
+    .right{
+      float: left;
+      display: block;
+    }
+    </style>
+  <body>
+    <div class="panel panel-default container">
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-lo-6 col-lg-offset-3">
+          <div class="row">
+            <div class="jumbotronf col-lg-6">
+            
+          </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+            <div class="input-group">
+              <input type="text" id="inputContentf" class="form-control" placeholder="fenci ...">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" id="subBtnf" disabled type="button">Go!</button>
+                </span>
+            </div><!-- /input-group -->
+          </div><!-- /.col-lg-6 -->
+          </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(function(){
+        $('#inputContentf')[0].addEventListener('keyup',function(){
+          if($('#inputContentf').val() == '' || $('#inputContentf').val() == null || $('#inputContentf').val() == undefined){
+            $('#subBtnf').attr('disabled',true);
+          }else {
+            $('#subBtnf').attr('disabled',false);
+          }
+        })
+            function postmsg () {
+                var inputContent = $('#inputContentf').val();
+                var inputHtml = $(".jumbotronf").html()+'<div class="row"><div class="panel panel-default left data"><div class="panel-body">'+inputContent+'</div></div></div>';
+                $(".jumbotronf").html(inputHtml);
+                $('#inputContentf').val(null);
+                if($('#inputContentf').val() == '' || $('#inputContentf').val() == null || $('#inputContentf').val() == undefined){
+                    $('#subBtnf').attr('disabled',true);
+                }else {
+                    $('#subBtnf').attr('disabled',false);
+                }
+                $.ajax({
+                    //提交数据的类型 POST GET
+                    type:"POST",
+                    //提交的网址
+                    url:"http://101.236.20.142:8080/partciple",
+                    //提交的数据
+                    data:{siri:inputContent},
+                    dataType: "text",
+                    //成功返回之后调用的函数             
+                    success:function(data){
+                        var oldHtml = $(".jumbotronf").html();
+                        var newHtml = oldHtml +'<div style="overflow:hidden;"><div class="panel panel-default data right"><div class="panel-body">'+data+'</div></div></div>'
+                        $(".jumbotronf").html(newHtml);
+                        var h = document.querySelector('.jumbotronf').scrollHeight-$('.jumbotronf').height();
+                        $('.jumbotronf').scrollTop(h);
+                    },
+                    //调用执行后调用的函数
+                    complete: function(XMLHttpRequest, textStatus){
+                        //HideLoading();
+                    },
+                    //调用出错执行的函数
+                    error: function(){
+                        //请求出错处理
+                    }         
+                });
+            }
+        $('#subBtnf').on('click',postmsg);
+            window.onkeyup = function(eve){
+                var e = eve || window.event;
+                if (e.keyCode == 13) {
+                    postmsg();
+                };
+            }
+        })
+    </script>
+  </body>
+  <div data-role="footer">
+    <h1>  </h1>
+  </div>
+</div> 
+
+
+
+<div data-role="page" id="pagefour">
+  <div data-role="header">
+    <a href="#pageone" class="ui-btn ui-corner-all ui-shadow ui-icon-home ui-btn-icon-left">主页</a>
+    <h1>图片</h1>
+  </div>
+  <body>
+    <div data-role="main" class="ui-content">
+      <form enctype="multipart/form-data" id="form1">
+          <input type="file" id="file" name="imgfile" />
+          <div type="text" id="inputContentp" class="form-control" placeholder="P4BOT ..."></div>>
+          <input type="button" id="btnsubmit" value=" 上传识别 " />
+    </form>
+    </div>
+
+    <div data-role="footer">
+      <h1> </h1>
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $("#btnsubmit").click(function () {
+                var formData = new FormData();
+
+                var file = $('#file')[0].files[0];
+
+                if(!file){ alert("请选择文件"); return; }
+
+                formData.append('file',file);
+
+                const XML = new XMLHttpRequest();
+
+                XML.open("POST",'http://101.236.20.142:8080/ocr',true);
+
+                XML.onload = function(res){
+                  console.log( "图片的base64码:" + XML.response);
+                  $(inputContentp).html("解析结果是： " + XML.response)
+                }
+
+                XML.onerror = function(err){
+                  console.log(err);
+                }
+                XML.send(formData);
+
+
+
+
+                // $.ajax({
+                //     data: formData,
+                //     url: 'http://127.0.0.1:8090/update', /*设置post提交到的页面*/
+                //     type: "POST", /*设置表单以post方法提交*/
+                //     success: function (data) {
+                //         console.log(data);
+                //     },
+                //     beforeSend:function(xhr){
+                //       xhr.setRequestHeader("Content-Type","multipart/form-data");
+                //     },
+                //     error: function (error) { console.log(error); },
+                // });
+            });
+
+
+
+
+        });
+
+
+
+    </script>
+  </body>
+</div>
+</body>
+</html>
