@@ -1,0 +1,102 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>P4Lab</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.css">
+        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='p4lab.css')}}">
+	<script src="https://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="https://apps.bdimg.com/libs/jquerymobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	<script src="{{url_for('static', filename='js/p4lab.js')}}"></script>
+	<script src="{{url_for('static', filename='js/p4bot.js')}}"></script>
+</head>
+
+<body>
+<div data-role="page" class="p4lab" id="frontpage">
+	<div data-role="header" data-theme="a" data-position="fixed">
+		<h1>P4Lab</h1>
+	</div>
+	<div>
+		<ul data-role="listview" data-inset="false">
+		<li>
+				<a href= "{{url_for('static', filename='html/front-intro.html')}}" data-transition="none" data-ajax="false">
+				<h2>关于P4Lab</h2>
+				<p>本应用是DMC部门进行实验的Demo页面。其中提供了接口和Demo，用户可以测试和使用其中提供的接口，也可以浏览demo，若将接口应用到产品中，需要提前告知。</p>
+				<p class="ui-li-aside"><strong>15:16</strong>PM</p>
+			</a>
+		</li>
+		<li>
+			<a href="{{url_for('static', filename='html/p4bot-intro.html')}}" data-transition="none" >
+                                <img src="{{ url_for('static', filename='images/ai12.png') }}"/>
+				<h2>和机器人撩撩天</h2>
+				<p></p><p></p>
+				<p>
+					<span><span>1</span>人观看</span>
+					<span>刚刚</span>
+				</p>
+			</a>
+		</li>
+		<li>
+			<a href="{{url_for('static', filename='html/p4part-intro.html')}}" data-transition="none" data-ajax="false">
+				<h2>中文分词接口与Demo</h2>
+				<p></p><p></p>
+				<p>
+					<span><span>1</span>人观看</span>
+					<span>刚刚</span>
+				</p>
+			</a>
+		</li>
+		<li>
+			<a href="{{url_for('static', filename='html/p4ocr-intro.html')}}" data-transition="none" data-ajax="false">
+                                <img src="{{ url_for('static', filename='images/ai16.png') }}"/>
+				<h2>一个好用的中英文OCR模型</h2>
+				<p></p><p></p>
+				<p>
+					<span><span>1</span>人观看</span>
+					<span>刚刚</span>
+				</p>
+			</a>
+		</li>
+		</ul>
+	</div>
+
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#" data-icon="home" class="ui-btn-active ui-state-persist">首页</a></li>
+				<li><a href="{{url_for('static', filename='html/stat.html')}}" data-icon="grid" data-transition="none">统计</a></li>
+				<li><a href="{{url_for('static', filename='html/my.html')}}" data-icon="gear" data-transition="none">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div>
+<div data-role="page" class="p4lab" id="statpage">
+	<div data-role="header" data-theme="b" data-position="fixed">
+		<h1>统计页面</h1>
+	</div>
+	<a href="#" class="ui-btn ui-corner-all">Test</a>
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#frontpage" data-icon="home" data-transition="none">首页</a></li>
+				<li><a href="#" data-icon="grid" class="ui-btn-active ui-state-persist">统计</a></li>
+				<li><a href="#mypage" data-icon="gear" data-transition="none">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div>
+<div data-role="page" class="p4lab" id="mypage">
+	<a href="#" class="ui-btn ui-corner-all">Anchor</a>
+	<div data-role="footer" data-position="fixed" class="ui-body-b footer">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#frontpage" data-icon="home" data-transition="none">首页</a></li>
+				<li><a href="#statpage" data-icon="grid" data-transition="none">统计</a></li>
+				<li><a href="#" data-icon="gear" class="ui-btn-active ui-state-persist">我的</a></li>
+			</ul>
+		</div><!-- /navbar -->
+	</div><!-- /footer -->
+</div>
+</body>
+</html>
