@@ -1,0 +1,38 @@
+<aiml version="1.0.1" encoding="UTF-8">
+<!-- basic_chat.aiml -->
+
+    <category>
+        <pattern>卫生间</pattern>
+        <template>
+            厕所在第一个路口右手边， 第二个路口右手边。
+        </template>
+    </category>
+
+    <category>
+        <pattern>小卖店</pattern>
+        <template>
+              小卖店在正门左手边第二个路口， 侧门右手边。
+        </template>
+    </category>
+
+    <category>
+        <pattern>时间</pattern>
+        <template>
+            营业时间：
+            4.1-10.31：08:20-17:00（16:00停止售票）；
+            11.1-3.31：08:30-16:30（15:30停止售票；每周一闭馆）
+        </template>
+    </category>
+
+    <category>
+        <pattern>票价</pattern>
+        <template>
+            门票价格：
+            （1）每年4月1日至10月31日为旺季，大门票60元/人；
+            （2）每年11月1日至次年3月31日为淡季，大门票40元/人。
+            （3）珍宝馆（即进入宁寿宫区，还包括戏曲馆、石鼓馆）参观门票：10元/人。
+            （4）钟表馆（即进入奉先殿区）参观门票：10元/人。
+        </template>
+    </category>
+
+</aiml>
