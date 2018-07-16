@@ -13,7 +13,7 @@ from common_log import  logger
 app = Flask(__name__)
 
 # 百度语音
-APP_ID = '********'
+APP_ID = '*********'
 API_KEY = '**********'
 SECRET_KEY = '*******'
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
