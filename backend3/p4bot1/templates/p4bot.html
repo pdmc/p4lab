@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>P4BOT</title>
+
+    <!-- Bootstrap -->
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+    .jumbotron{
+    	margin: 0px;
+    	padding: 0px;
+    	height: 300px;
+    	overflow: scroll;
+    }
+    .col-lg-6 {
+    	padding: 0px
+    }
+    .data {
+    	font-size: 16px;
+    	font-weight: normal;
+        max-width: 70%;
+        word-break:break-all;
+    }
+    .left{
+    	float: right;
+    	display: block;
+    }
+    .right{
+    	float: left;
+    	display: block;
+    }
+    </style>
+  </head>
+  <body>
+  	<div class="panel panel-default container">
+	  <div class="panel-body">
+		  <div class="row">
+		  	<div class="col-lo-6 col-lg-offset-3">
+		  		<div class="row">
+			  		<div class="jumbotron col-lg-6">
+					 	
+					</div>
+			  	</div>
+			  	<div class="row">
+			  		<div class="col-lg-6">
+					  <div class="input-group">
+					    <input type="text" id="inputContent" class="form-control" placeholder="P4BOT ...">
+				        <span class="input-group-btn">
+				          <button class="btn btn-default" id="subBtn" disabled type="button">Go!</button>
+				        </span>
+					  </div><!-- /input-group -->
+					</div><!-- /.col-lg-6 -->
+			  	</div>
+		  	</div>
+		  </div>	
+	  </div>
+	</div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    	$(function(){
+    		$('#inputContent')[0].addEventListener('keyup',function(){
+    			if($('#inputContent').val() == '' || $('#inputContent').val() == null || $('#inputContent').val() == undefined){
+    				$('#subBtn').attr('disabled',true);
+    			}else {
+    				$('#subBtn').attr('disabled',false);
+    			}
+    		})
+            function postmsg () {
+                var inputContent = $('#inputContent').val();
+                var inputHtml = $(".jumbotron").html()+'<div class="row"><div class="panel panel-default left data"><div class="panel-body">'+inputContent+'</div></div></div>';
+                $(".jumbotron").html(inputHtml);
+                $('#inputContent').val(null);
+                if($('#inputContent').val() == '' || $('#inputContent').val() == null || $('#inputContent').val() == undefined){
+                    $('#subBtn').attr('disabled',true);
+                }else {
+                    $('#subBtn').attr('disabled',false);
+                }
+                $.ajax({
+                    //提交数据的类型 POST GET
+                    type:"POST",
+                    //提交的网址
+                    url:"http://101.236.38.113:8082/p4bot",
+                    //提交的数据
+                    data:{siri:inputContent},
+                    dataType: "text",
+                    //成功返回之后调用的函数             
+                    success:function(data){
+                        var oldHtml = $(".jumbotron").html();
+                        var newHtml = oldHtml +'<div style="overflow:hidden;"><div class="panel panel-default data right"><div class="panel-body">'+data+'</div></div></div>'
+                        $(".jumbotron").html(newHtml);
+                        var h = document.querySelector('.jumbotron').scrollHeight-$('.jumbotron').height();
+                        $('.jumbotron').scrollTop(h);
+                    },
+                    //调用执行后调用的函数
+                    complete: function(XMLHttpRequest, textStatus){
+                        //HideLoading();
+                    },
+                    //调用出错执行的函数
+                    error: function(){
+                        //请求出错处理
+                    }         
+                });
+            }
+    		$('#subBtn').on('click',postmsg);
+            window.onkeyup = function(eve){
+                var e = eve || window.event;
+                if (e.keyCode == 13) {
+                    postmsg();
+                };
+            }
+        })
+    </script>
+  </body>
+</html>
